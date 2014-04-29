@@ -1,3 +1,5 @@
+package cs.ncl.ac.uk.normal;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -5,13 +7,13 @@ import java.util.List;
  * @author ZequnLi
  *         Date: 14-4-25
  */
-public class temp {
+public class normal {
     private  int[][] servicesSecurity; //connection matrix ,-1 refers to no relation
     private  int[][] servicesCommunication;  //data transfer
     private  int[][] servicesCPUCost;        //cpu cost on different platform
     private  int[][] platformInfo;           //platform security, input and output cost
 
-    public temp(){
+    public normal(){
 
 
     }
@@ -101,14 +103,14 @@ public class temp {
 //            boolean ignore = false;
 //            s = "";
 //
-//            int temp = it;
+//            int cs.ncl.ac.uk.normal.normal = it;
 //            for(int m = 0 ; m < a.length ; m++){
-//                if(temp%max >= a[m].length){
+//                if(cs.ncl.ac.uk.normal.normal%max >= a[m].length){
 //                    ignore = true;
 //                    break;
 //                }
-//                    s += a[m][temp % max];
-//                temp /= max;
+//                    s += a[m][cs.ncl.ac.uk.normal.normal % max];
+//                cs.ncl.ac.uk.normal.normal /= max;
 //             }
 //            if(!ignore){
 //                System.out.println(s);
