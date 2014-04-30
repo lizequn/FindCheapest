@@ -3,11 +3,8 @@ package cs.ncl.ac.uk.HEFT;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 import java.util.TreeMap;
 
 import cs.ncl.ac.uk.test.*;
@@ -24,7 +21,7 @@ public class algorithm {
 	HashMap<Integer,Integer> rank=new HashMap<Integer,Integer>();
 	
 	public algorithm(){
-		workflow getInfo=new workflow();
+		Workflow getInfo=new Workflow();
 		this.workflow=getInfo.getWorkflow();
 		this.ccost=getInfo.comCost();
 		this.cpucost=getInfo.deployCost();
