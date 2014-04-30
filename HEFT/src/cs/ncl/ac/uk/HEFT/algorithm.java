@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.TimeUnit;
 
 import cs.ncl.ac.uk.test.*;
 
@@ -20,11 +21,11 @@ public class algorithm {
 	ArrayList<Integer> leaf=new ArrayList<Integer>();
 	HashMap<Integer,Integer> rank=new HashMap<Integer,Integer>();
 	
-	public algorithm(){
-		Workflow getInfo=new Workflow();
+	public algorithm(WorkflowTemplate getInfo){
+		//Workflow getInfo=new Workflow();
 		this.workflow=getInfo.getWorkflow();
-		this.ccost=getInfo.comCost();
-		this.cpucost=getInfo.deployCost();
+		this.ccost=getInfo.getCcost();
+		this.cpucost=getInfo.getCpucost();
 		deployment=new int[workflow.length][ccost.length];
 		averageCommunication();
 	}
@@ -261,10 +262,15 @@ public class algorithm {
 		}else{
 			return workflow[startNode][endNode]*ccost[startCloud][endCloud];
 		}
+
 		                   
 	}
 	public static void main(String[] args){
-		algorithm test=new algorithm();
+        long before = System.nanoTime();
+		algorithm test=new algorithm(new Workflow());
 		test.HEFTalgorithm();
+        long after = System.nanoTime();
+        long time = TimeUnit.MILLISECONDS.convert(after-before,TimeUnit.NANOSECONDS);
+        System.out.println("time:"+time);
 	}
 }

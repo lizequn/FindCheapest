@@ -1,6 +1,7 @@
 package cs.ncl.ac.uk.ga;
 
 import cs.ncl.ac.uk.test.Workflow;
+import cs.ncl.ac.uk.test.WorkflowTemplate;
 
 /**
  * @author ZequnLi
@@ -14,12 +15,19 @@ public class GA {
     int [] cloud;
     int [][] ssecurity;
 
-    public GA(Workflow w){
+    public GA(WorkflowTemplate w){
         this.workflow = w.getWorkflow();
         this.dataSecurity = w.getDataSecurity();
-        this.ccost = w.comCost();
-        this.cpucost = w.deployCost();
+        this.ccost = w.getCcost();
+        this.cpucost = w.getCpucost();
         this.cloud = w.getCloud();
         this.ssecurity = w.getSsecurity();
     }
+
+    public void begin(int population,double crossover,double mutation){
+
+
+    }
+
+
 }
