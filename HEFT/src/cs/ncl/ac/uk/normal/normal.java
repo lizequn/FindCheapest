@@ -2,9 +2,11 @@ package cs.ncl.ac.uk.normal;
 
 import cs.ncl.ac.uk.log.LogAccess;
 import cs.ncl.ac.uk.test.Workflow;
+import cs.ncl.ac.uk.test.WorkflowModel;
 import cs.ncl.ac.uk.test.WorkflowRandomCreator;
 import cs.ncl.ac.uk.test.WorkflowTemplate;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -157,6 +159,7 @@ public class Normal {
                 list.add(i);
             }
         }
+       System.out.println("sp:"+sortedPlatform);
         //
 
         //for each service get all possible deployment
@@ -178,6 +181,7 @@ public class Normal {
             }
             possibleDeploy.add(list);
         }
+        System.out.println("sp:"+possibleDeploy);
         //get Permutation
         //get maximum choices
         int max = 0;
@@ -207,7 +211,9 @@ public class Normal {
             }
             if(!ignore){
                 //result
-                if(min>this.calCost(list)){
+                double re =  this.calCost(list);
+                if(min>re){
+                    min =re;
                     best = list;
                 }
             }
@@ -253,14 +259,18 @@ public class Normal {
         return result;
     }
 
-    public static void main(String [] args) throws SQLException {
+    public static void main(String [] args) throws SQLException, IOException, ClassNotFoundException {
         LogAccess logAccess = new LogAccess("result");
         logAccess.init();
         for(int x = 2 ; x<= 5;x ++){
             for(int y = 2;y<= 12;y++){
                 long result = 0;
+                double cost = 0;
                 for(int i = 0;i<10;i++){
-                    Normal n = new Normal(new WorkflowRandomCreator().create(x,y,2));
+//                    WorkflowModel workflowModel =new WorkflowRandomCreator().create(x,y,2);
+//                    WorkflowModel.store(workflowModel,"model"+x+""+y+""+i);
+                    WorkflowModel workflowModel =WorkflowModel.read("model" + x + "" + y + "" + (i+8));
+                    Normal n = new Normal(workflowModel);
                     long before = System.nanoTime();
                     List<Integer> lists =n.sortBest();
 //                    double minCost = Double.MAX_VALUE;
@@ -270,19 +280,35 @@ public class Normal {
 //                            minCost = temp;
 //                        }
 //                    }
+                      cost+= n.calCost(lists);
+                      System.out.println(cost);
+                    System.out.println(lists);
+                    System.out.println("----------------");
+                    print(workflowModel.getWorkflow());
+                    System.out.println("----------------");
+                    print(workflowModel.getCcost());
+                    System.out.println("----------------");
+                    print(workflowModel.getCpucost());
+                    System.out.println("----------------");
+                    print(workflowModel.getSsecurity());
+                    print(workflowModel.getCloud());
+
                     long after = System.nanoTime();
-                    long time = TimeUnit.MICROSECONDS.convert(after-before,TimeUnit.NANOSECONDS);
+                    long time = TimeUnit.MILLISECONDS.convert(after-before,TimeUnit.NANOSECONDS);
                     result+=time;
+                    System.exit(-1);
                 }
+
                 result/=10;
-                logAccess.insertTuple(x+"",y+"",result+"");
+                cost/=10;
+                logAccess.insertTuple(x+"",y+"",result+"",cost+"");
                 System.out.println(x+" "+y);
             }
 
         }
-        logAccess.output2CSV("D://","result.csv");
-        //Normal n = new Normal(new Workflow());
-//        Normal n = new Normal(new WorkflowRandomCreator().create(4,12,2));
+        logAccess.output2CSV("D://","result1.csv");
+//        Normal n = new Normal(new Workflow());
+//       // Normal n = new Normal(new WorkflowRandomCreator().create(4,12,2));
 //        System.out.println("finish creating");
 //        long before = System.nanoTime();
 //        List<List<Integer>> lists =n.sort();
@@ -302,5 +328,18 @@ public class Normal {
 //        long after = System.nanoTime();
 //        long time = TimeUnit.MILLISECONDS.convert(after-before,TimeUnit.NANOSECONDS);
 //        System.out.println("time:"+time);
+    }
+    public static void print(int [][] result){
+        for(int h=0;h<result.length;h++){
+            for(int f=0;f<result[h].length;f++){
+                System.out.print(result[h][f]+",");
+            }
+            System.out.println("");
+        }
+    }
+    public static void print(int [] result){
+        for(int h = 0;h<result.length;h++){
+            System.out.print(result[h]+",");
+        }
     }
 }
