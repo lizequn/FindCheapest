@@ -95,6 +95,18 @@ public class Security {
         }
         return false;
     }
+    public boolean deployListCheck(List<Integer> list){
+        boolean flag = true;
+        int i = 0;
+        for(int j:list){
+            flag = allowedDeploy(i,j);
+            i++;
+            if(!flag){
+                return false;
+            }
+        }
+        return true;
+    }
 
 
 }

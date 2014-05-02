@@ -281,17 +281,17 @@ public class Normal {
 //                        }
 //                    }
                       cost+= n.calCost(lists);
-                      System.out.println(cost);
-                    System.out.println(lists);
-                    System.out.println("----------------");
-                    print(workflowModel.getWorkflow());
-                    System.out.println("----------------");
-                    print(workflowModel.getCcost());
-                    System.out.println("----------------");
-                    print(workflowModel.getCpucost());
-                    System.out.println("----------------");
-                    print(workflowModel.getSsecurity());
-                    print(workflowModel.getCloud());
+//                      System.out.println(cost);
+//                    System.out.println(lists);
+//                    System.out.println("----------------");
+//                    print(workflowModel.getWorkflow());
+//                    System.out.println("----------------");
+//                    print(workflowModel.getCcost());
+//                    System.out.println("----------------");
+//                    print(workflowModel.getCpucost());
+//                    System.out.println("----------------");
+//                    print(workflowModel.getSsecurity());
+//                    print(workflowModel.getCloud());
 
                     long after = System.nanoTime();
                     long time = TimeUnit.MILLISECONDS.convert(after-before,TimeUnit.NANOSECONDS);

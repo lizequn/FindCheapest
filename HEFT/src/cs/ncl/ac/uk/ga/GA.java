@@ -1,15 +1,21 @@
 package cs.ncl.ac.uk.ga;
 
 import com.sun.deploy.util.ArrayUtil;
+import cs.ncl.ac.uk.log.LogAccess;
+import cs.ncl.ac.uk.security.Security;
 import cs.ncl.ac.uk.security.securityCheck;
 import cs.ncl.ac.uk.test.RandomInt;
 import cs.ncl.ac.uk.test.Workflow;
+import cs.ncl.ac.uk.test.WorkflowModel;
 import cs.ncl.ac.uk.test.WorkflowTemplate;
 
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author ZequnLi
@@ -22,7 +28,7 @@ public class GA {
     int [][] cpucost;
     int [] cloud;
     int [][] ssecurity;
-    private securityCheck scheck;
+    private Security scheck;
 
     public GA(WorkflowTemplate w){
         this.workflow = w.getWorkflow();
@@ -31,10 +37,10 @@ public class GA {
         this.cpucost = w.getCpucost();
         this.cloud = w.getCloud();
         this.ssecurity = w.getSsecurity();
-        this.scheck = new securityCheck(new Workflow());
+        this.scheck = new Security(w);
     }
 
-    public void begin(int population,double crossover,double mutation){
+    public double begin(int population,double crossover,double mutation){
 
         //check
         if(!scheck.workflowSecurity()){
@@ -42,7 +48,6 @@ public class GA {
             System.exit(0);
         }
         List<List<Integer>> pop = getPopulation(population);
-        System.out.println("A");
         double m = Double.MAX_VALUE;
         for(int i =0;i<1000;i++){
             List<List<Integer>> pop1 = doSelection(pop);
@@ -53,13 +58,38 @@ public class GA {
                 m = temp;
             }
         }
-        System.out.println(m);
-
+        //System.out.println(m);
+        return m;
     }
 
-    public static void main(String [] args){
-        GA ga = new GA(new Workflow());
-        ga.begin(10,.5,.05);
+    public static void main(String [] args) throws SQLException, IOException, ClassNotFoundException {
+        LogAccess logAccess = new LogAccess("result");
+        logAccess.init();
+        for(int x = 2 ; x<= 5;x ++){
+            for(int y = 2;y<= 12;y++){
+                long result = 0;
+                double cost = 0;
+                for(int i = 0;i<10;i++){
+//                    WorkflowModel workflowModel =new WorkflowRandomCreator().create(x,y,2);
+//                    WorkflowModel.store(workflowModel,"model"+x+""+y+""+i);
+                    WorkflowModel workflowModel =WorkflowModel.read("model" + x + "" + y + "" + i);
+                    GA n = new GA(workflowModel);
+                    long before = System.nanoTime();
+                    cost +=n.begin(10,.5,.05);
+                    long after = System.nanoTime();
+                    long time = TimeUnit.MILLISECONDS.convert(after-before,TimeUnit.NANOSECONDS);
+                    result+=time;
+                }
+
+                result/=10;
+                cost/=10;
+                logAccess.insertTuple(x+"",y+"",result+"",cost+"");
+                System.out.println(x+" "+y);
+            }
+
+        }
+        logAccess.output2CSV("D://","resultGA.csv");
+
     }
 
     private List<List<Integer>> getPopulation(int population){
@@ -124,9 +154,10 @@ public class GA {
                 max = list.size();
             }
         }
-        System.out.println(number);
-        if(population>number){
-            throw new IllegalArgumentException("for the given workflow, there are not enough valid combinations to build so much population");
+        //System.out.println(number);
+        while (population>number){
+            //throw new IllegalArgumentException("for the given workflow, there are not enough valid combinations to build so much population");
+            population--;
         }
         // regard it as a max * service size full matrix
         double it = Math.pow(max,possibleDeploy.size()) -1;
@@ -177,6 +208,11 @@ public class GA {
         double total = 0;
         for(List<Integer> list:population){
             double temp = calCost(list);
+
+            if(!scheck.deployListCheck(list)){
+                temp*=10;
+            }
+
             total+= temp;
             fitness.add(temp);
         }
@@ -254,14 +290,16 @@ public class GA {
         List<Integer> list = null;
         double min = Double.MAX_VALUE;
         for(List<Integer> r:input){
-            double temp = calCost(r);
-            if(min>temp){
-                min = temp;
-                list = r;
+            if(scheck.deployListCheck(r)){
+                double temp = calCost(r);
+                if(min>temp){
+                    min = temp;
+                    list = r;
+                }
             }
         }
-        System.out.println(list);
-        System.out.println(min);
+//        System.out.println(list);
+//        System.out.println(min);
         return min;
     }
 
