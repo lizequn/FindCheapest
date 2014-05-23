@@ -90,6 +90,15 @@ public class LogAccess {
         }
     }
 
+    public void Output2Screen() throws SQLException {
+        ResultSet resultSet = connection.createStatement().executeQuery("select logInfo from "+table);
+        int i =0;
+        while (resultSet.next()){
+            String str = resultSet.getString("logInfo");
+            System.out.println(i++ +"  "+str);
+        }
+    }
+
 //    public static void main(String [] args) throws SQLException {
 //        MemoryMonitor memoryMonitor = new MemoryMonitor(1000);
 //        memoryMonitor.start();

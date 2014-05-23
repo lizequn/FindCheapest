@@ -1,69 +1,190 @@
 package cs.ncl.ac.uk.HEFT;
 
-import java.io.IOException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 import java.util.TreeMap;
-import java.util.concurrent.TimeUnit;
 
-import cs.ncl.ac.uk.ga.GA;
-import cs.ncl.ac.uk.log.LogAccess;
 import cs.ncl.ac.uk.security.Security;
-import cs.ncl.ac.uk.security.securityCheck;
-import cs.ncl.ac.uk.test.*;
+import cs.ncl.ac.uk.test.WorkflowTemplate;
 
-
-public class algorithm {
+public class oneStepForward {
     int[][] workflow;
     int [][] ccost;
     int [][] cpucost;
     int [][] deployment;
+    int [][] finaldeployment;
     int aveCom=0;
     ArrayList<Integer> root=new ArrayList<Integer>();
     ArrayList<Integer> leaf=new ArrayList<Integer>();
     HashMap<Integer,Integer> rank=new HashMap<Integer,Integer>();
+    HashMap<Integer,Integer> SOC=new  HashMap<Integer,Integer>();
     Security checking;
-    public algorithm(WorkflowTemplate getInfo){
+    public oneStepForward (WorkflowTemplate getInfo){
 
         this.workflow=getInfo.getWorkflow();
         this.ccost=getInfo.getCcost();
         this.cpucost=getInfo.getCpucost();
         this.checking=new Security(getInfo);
         deployment=new int[workflow.length][ccost.length];
+        finaldeployment=new int[workflow.length][ccost.length];
         averageCommunication();
     }
 
-    // running HEFT algorithm
-	/*
-	 * we add the security check in selecting cloud to deploy
-	 * */
-    public int HEFTalgorithm() {
+    public int newAlgorithm(){
+        HEFTalgorithm();
+        int total=0;
+        LinkedList<Integer> queue = sortRank(rank);
 
-        boolean show = false;
+        while (!queue.isEmpty()) {
 
+            for (int i = 0;i<queue.size();i++) {
+                int block = queue.get(i);
+                ArrayList<Integer> offSprings=getOffSpring(block);
+                if(isCross(offSprings,block)!=-1){
+                    int cloud=isCross(offSprings,block);
+                    if(getParents(block).isEmpty()){
+                        setfianlDeploy(block, cloud);
+                        queue.remove((Object)block);
+                        total += cpucost[block][cloud];
+                    }else{
+                        ArrayList<Integer> parent = getParents(block);
+                        if (!getUndeploy(parent)) {
+                            int SOCcost = SOC(block, cloud, parent);
+                            setfianlDeploy(block,cloud);
+                            queue.remove((Object)block);
+                            total+=SOCcost;
+                        }
+                    }
+                }else{
+                    if (getParents(block).isEmpty()) {
+
+                        int cloud = getCloud(block);
+                        setDeployment(block, cloud);
+                        queue.remove((Object)block);
+                        total += cpucost[block][cloud];
+
+                    } else {
+
+                        ArrayList<Integer> parent = getParents(block);
+                        int min = 0;
+                        int cloud = 0;
+                        if (!getUndeploy(parent)) {
+                            for (int a = 0; a < ccost.length; a++) {
+                                if (checking.allowedDeploy(block, a)) {
+                                    //       	System.out.println(a);
+                                    int SOCcost = SOC(block, a, parent);
+                                    if (SOCcost == -1) {
+                                        //  show = true;
+                                        System.out.println("parent node has not been deployed");
+                                    } else {
+                                        if(min==0){
+                                            min=SOCcost;
+                                            cloud = a;
+                                        }else{
+                                            if (min > SOCcost) {
+                                                min = SOCcost;
+                                                cloud = a;
+                                            }
+                                        }
+
+                                    }
+                                }
+
+                            }
+                            setDeployment(block,cloud);
+                            queue.remove((Object)block);
+
+                            total+=min;
+                        }
+                    }
+                }
+
+            }
+        }
+        return total;
+    }
+
+    private int isCross(ArrayList<Integer> offSprings,int parent){
+        int max=Integer.MIN_VALUE;
+        int son=0;
+
+        for(int a=0;a<offSprings.size();a++){
+            int node=offSprings.get(a);
+            int SOCcost=SOC.get(node);
+            if(max<SOCcost){
+                max=SOCcost;
+                son=node;
+            }
+        }
+
+
+
+        int min=Integer.MAX_VALUE;
+        int cloud=0;
+        for(int a=0;a<ccost.length;a++){
+            boolean isValid=true;
+            if(checking.allowedDeploy(son, a)&&checking.allowedDeploy(parent, a)){
+
+                int sumCost=cpucost[son][a]+cpucost[parent][a];
+                if(min>sumCost){
+                    min=sumCost;
+                    cloud=a;
+                }
+            }
+        }
+
+        int currentCost=parentCost(parent);
+        if(min<(currentCost+max)){
+            return cloud;
+        }
+        return -1;
+    }
+
+    private int parentCost(int parent){
+
+        for(int i=0;i<deployment[parent].length;i++){
+            if(deployment[parent][i]==1){
+                return cpucost[parent][i];
+            }
+
+        }
+        return 0;
+    }
+/*
+ * if the SOCcost+the cost of each node is greater than the minimize cost of put all node in one valid cloud
+ * put them in one cloud. otherwise, keep using SOC
+ * */
+
+
+    public void HEFTalgorithm() {
+
+        //     boolean show = false;
         // total cost
-        int total = 0;
+        //   int total = 0;
         // ranking the nodes
         ranking();
         // no-descend order sort the nodes
         LinkedList<Integer> queue = sortRank(rank);
         while (!queue.isEmpty()) {
+
             for (int i = 0;i<queue.size();i++) {
+
                 int block = queue.get(i);
+
                 if (getParents(block).isEmpty()) {
+
                     int cloud = getCloud(block);
                     setDeployment(block, cloud);
                     queue.remove((Object)block);
-                    total += cpucost[block][cloud];
+                    int SOCcost=cpucost[block][cloud];
+                    SOC.put(block, SOCcost);
+                    //          total += SOCcost;
 
                 } else {
+
                     ArrayList<Integer> parent = getParents(block);
                     int min = 0;
                     int cloud = 0;
@@ -73,9 +194,8 @@ public class algorithm {
 
                                 int SOCcost = SOC(block, a, parent);
                                 if (SOCcost == -1) {
-                                    show = true;
-                                    System.out
-                                            .println("parent node has not been deployed");
+                                    //  show = true;
+                                    System.out.println("parent node has not been deployed");
                                 } else {
                                     if(min==0){
                                         min=SOCcost;
@@ -93,18 +213,21 @@ public class algorithm {
                         }
                         setDeployment(block,cloud);
                         queue.remove((Object)block);
-                        total+=min;
+                        SOC.put(block, min);
+                        //          total+=min;
                     }
                 }
             }
         }
+        //   print(deployment);
 
-        return total;
 
     }
 
     private boolean getUndeploy(ArrayList<Integer> parent){
         //	ArrayList<Integer> undeployedParent=new ArrayList<Integer>();
+
+        //	print(deployment);
         for(int a=0;a<parent.size();a++){
             int node=parent.get(a);
             if(returnDeployedCloud(node)==-1){
@@ -113,18 +236,6 @@ public class algorithm {
         }
 
         return false;
-    }
-    private void deployParent(ArrayList<Integer> undeployed,  LinkedList<Integer> queue){
-        ArrayList<Integer> newUndeployed=new ArrayList<Integer>();
-        for(int a=0;a<undeployed.size();a++){
-            int node=undeployed.get(a);
-            if(returnDeployedCloud(node)==-1){
-                newUndeployed.add(node);
-            }else{
-
-            }
-        }
-
     }
 
     // the sum of the communication cost from parent nodes
@@ -146,7 +257,6 @@ public class algorithm {
     // ranking all node
     public void ranking(){
         // store the ranked value of node
-
         ArrayList<Integer> visited=new ArrayList<Integer>();
         for(int a=0;a<workflow.length;a++){
             boolean isleaf=true;
@@ -163,12 +273,7 @@ public class algorithm {
                 rank.put(a, leafCost);
             }
         }
-
-//        System.out.println(leaf);
-//        System.out.println(rank);
         upForward(leaf, rank, visited);
-
-
     }
 
     private LinkedList<Integer> sortRank(final HashMap<Integer,Integer> rank){
@@ -215,6 +320,7 @@ public class algorithm {
         }
     }
 
+    // ranking by average
     private int rankCost(int node,HashMap<Integer,Integer> rank){
         int rankcost=0;
         // the communication cost from one node to its offspring nodes
@@ -223,7 +329,7 @@ public class algorithm {
         int singleRank=0;
         for(int a=0;a<workflow.length;a++){
             if(workflow[node][a]>0){
-               // System.out.println(node);
+                //   System.out.println(node);
                 //   System.out.println(node);
                 int son=a;
                 //    System.out.println(son);
@@ -257,6 +363,8 @@ public class algorithm {
         int ave=sum/(2*ccost.length);
         this.aveCom=ave;
     }
+
+
     // the average cost of each node
     private int computeAva(int node){
         int avCost = 0;
@@ -280,6 +388,20 @@ public class algorithm {
         }
         return parent;
     }
+
+    // get offspring node
+    private ArrayList<Integer> getOffSpring(int node){
+        ArrayList<Integer> offSpring=new ArrayList<Integer>();
+        for(int i=0;i<workflow.length;i++){
+            if(workflow[node][i]>0){
+                if(!offSpring.add(i)){
+                    offSpring.add(i);
+                }
+            }
+        }
+        return offSpring;
+    }
+
     // get cheapest computing cloud
     private int getCloud(int node){
         int cloud=0;
@@ -304,6 +426,18 @@ public class algorithm {
         deployment[node][cloud]=1;
     }
 
+    private void setfianlDeploy(int node,int cloud){
+
+        finaldeployment[node][cloud]=1;
+    }
+    private int isoccupied(int node){
+        for(int a=0;a<finaldeployment[node].length;a++){
+            if(finaldeployment[node][a]==1){
+                return a;
+            }
+        }
+        return -1;
+    }
     // get deployed cloud of nodes
     private int returnDeployedCloud(int node){
         for(int a=0;a<deployment[node].length;a++){
@@ -320,78 +454,6 @@ public class algorithm {
             return 0;
         }else{
             return workflow[startNode][endNode]*ccost[startCloud][endCloud];
-        }
-
-    }
-    public static void main(String[] args) throws IOException, ClassNotFoundException, SQLException {
-        WorkflowModel workflowModel =WorkflowModel.read("model" + 10 + "" + 100 + "" + 1);
-        algorithm n = new algorithm(workflowModel);
-        long before = System.nanoTime();
-        System.out.println(n.HEFTalgorithm());
-        long after = System.nanoTime();
-        long time = TimeUnit.MICROSECONDS.convert(after-before,TimeUnit.NANOSECONDS);
-        List<Integer> result = n.transfer(n.deployment);
-        GA ga = new GA(workflowModel);
-        System.out.println(ga.calCost(result));
-//        LogAccess logAccess = new LogAccess("result");
-//        logAccess.init();
-//        for(int x = 2 ; x<= 5;x ++){
-//            for(int y = 2;y<= 12;y++){
-//                long result = 0;
-//                double cost = 0;
-//                for(int i = 0;i<10;i++){
-//                    WorkflowModel workflowModel =WorkflowModel.read("model" + x + "" + y + "" + i);
-////                    print(workflowModel.getWorkflow());
-//                    algorithm n = new algorithm(workflowModel);
-//                    long before = System.nanoTime();
-//
-//                    cost+=n.HEFTalgorithm();
-//                    System.out.println(cost);
-//                    System.out.println("-------------------------------------");
-////                    double minCost = Double.MAX_VALUE;
-////                    for(List<Integer> list: lists){
-////                        double temp = n.calCost(list);
-////                        if(minCost>temp){
-////                            minCost = temp;
-////                        }
-////                    }
-////                    cost += n.calCost(lists);
-//                    long after = System.nanoTime();
-//                    long time = TimeUnit.MICROSECONDS.convert(after-before,TimeUnit.NANOSECONDS);
-//                    result+=time;
-//
-//                }
-//
-//
-//                result/=10;
-//                cost/=10;
-//                logAccess.insertTuple(x+"",y+"",result+"",cost+"");
-//                System.out.println(x+" "+y);
-//            }
-//
-//        }
-//        logAccess.output2CSV("D://", "resultHEFT.csv");
-//        algorithm n = new algorithm(new Workflow());
-//        System.out.println("-----");
-//        System.out.println(n.HEFTalgorithm());
-    }
-    public List<Integer> transfer(int [][] input){
-        List<Integer> list = new ArrayList<Integer>();
-        for(int i=0;i<input.length;i++){
-            for(int j=0;j<input[0].length;j++){
-                if(input[i][j] == 1){
-                    list.add(j);
-                }
-            }
-        }
-        return list;
-    }
-    public static void print(int [][] result){
-        for(int h=0;h<result.length;h++){
-            for(int f=0;f<result[h].length;f++){
-                System.out.print(result[h][f]+",");
-            }
-            System.out.println("");
         }
     }
 }

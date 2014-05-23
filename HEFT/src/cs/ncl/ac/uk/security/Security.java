@@ -17,6 +17,7 @@ public class Security {
     int [] cloud;
     int [][] ssecurity;
     private final List<Integer> possibleDeploy;
+    private final List<List<Integer>> possibleList;
 
     public Security(WorkflowTemplate w){
         this.workflow = w.getWorkflow();
@@ -26,6 +27,7 @@ public class Security {
         this.cloud = w.getCloud();
         this.ssecurity = w.getSsecurity();
         possibleDeploy = init();
+        possibleList = getPossibleList();
     }
 
     public boolean workflowSecurity(){
@@ -71,6 +73,61 @@ public class Security {
         return list;
 
     }
+    private List<List<Integer>>  getPossibleList(){
+        int minLvl= Integer.MAX_VALUE;
+        int maxLvl = Integer.MIN_VALUE;
+        final List<List<Integer>> sortedPlatform = new ArrayList<List<Integer>>();
+        //find max security lvl
+        for(int i =0;i<cloud.length;i++){
+            final int current = cloud[i];
+            if(current<minLvl){
+                minLvl = current;
+            }
+            if(current>maxLvl){
+                maxLvl = current;
+            }
+        }
+
+        //init
+        for(int i =0;i<maxLvl+1;i++){
+            sortedPlatform.add(null);
+        }
+        // order and cluster clouds by its security
+        for(int i =0;i<cloud.length;i++){
+            final int current = cloud[i];
+            List<Integer> list = sortedPlatform.get(current);
+            if(null == list){
+                List<Integer> temp = new ArrayList<Integer>();
+                temp.add(i);
+                sortedPlatform.set(current,temp);
+            } else {
+                list.add(i);
+            }
+        }
+        //System.out.println("sp:"+sortedPlatform);
+        //
+
+        //for each service get all possible deployment
+        final List<List<Integer>> possibleDeploy = new ArrayList<List<Integer>>();
+        for(int i=0;i<ssecurity.length;i++){
+            List<Integer> list = new ArrayList<Integer>();
+            int min = ssecurity[i][1]; //location
+            //int min = minLvl;
+            int max = maxLvl;
+            // consider data security
+            int dataMin = calMinDataSecurity(i);
+            if(min<dataMin) min = dataMin;
+
+            while (min<=max){
+                if(sortedPlatform.get(min) != null){
+                    list.addAll(sortedPlatform.get(min));
+                }
+                min++;
+            }
+            possibleDeploy.add(list);
+        }
+        return possibleDeploy;
+    }
     private int calMinDataSecurity(int pos){
         int result = -1;
         for(int i = 0;i<this.workflow.length;i++){
@@ -94,6 +151,9 @@ public class Security {
             return true;
         }
         return false;
+    }
+    public List<Integer> getAllowedDeployList(int serviceId){
+       return possibleList.get(serviceId);
     }
     public boolean deployListCheck(List<Integer> list){
         boolean flag = true;

@@ -11,10 +11,7 @@ import cs.ncl.ac.uk.test.WorkflowTemplate;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -29,6 +26,8 @@ public class GA {
     int [] cloud;
     int [][] ssecurity;
     private Security scheck;
+    private List<List<Integer>> store;
+    private Comparator<List<Integer>> comparator;
 
     public GA(WorkflowTemplate w){
         this.workflow = w.getWorkflow();
@@ -41,6 +40,14 @@ public class GA {
     }
 
     public double begin(int population,double crossover,double mutation){
+        comparator = new Comparator<List<Integer>>() {
+            @Override
+            public int compare(List<Integer> o1, List<Integer> o2) {
+                return (int)calCost(o1) - (int)calCost(o2);
+            }
+        };
+        store = new ArrayList<List<Integer>>();
+        Collections.sort(store,comparator);
 
         //check
         if(!scheck.workflowSecurity()){
@@ -49,35 +56,46 @@ public class GA {
         }
         List<List<Integer>> pop = getPopulation(population);
         double m = Double.MAX_VALUE;
-        for(int i =0;i<1000;i++){
-            List<List<Integer>> pop1 = doSelection(pop);
+        for(int i =0;i<500;i++){
+            List<List<Integer>> pop0 = updateStoreAndPopulation(pop,store);
+            List<List<Integer>> pop1 = doSelection1(pop0);
             List<List<Integer>> pop2 = doCrossover(pop1,crossover);
             List<List<Integer>> pop3 = doMutation(pop2,mutation);
             double temp = getBest(pop3);
             if(m>temp){
                 m = temp;
             }
+            pop = pop3;
         }
         //System.out.println(m);
         return m;
     }
 
     public static void main(String [] args) throws SQLException, IOException, ClassNotFoundException {
+//            WorkflowModel workflowModel =WorkflowModel.read("model" + 5 + "" + 12 + "" + 2);
+//
+//            GA n = new GA(workflowModel);
+//            long before = System.nanoTime();
+//            System.out.println(n.begin(100,.6,.2));
+//            long after = System.nanoTime();
+//            long time = TimeUnit.MICROSECONDS.convert(after-before,TimeUnit.NANOSECONDS);
+
+
         LogAccess logAccess = new LogAccess("result");
         logAccess.init();
-        for(int x = 2 ; x<= 5;x ++){
-            for(int y = 2;y<= 12;y++){
+        for(int x = 2 ; x<= 12;x ++){
+            for(int y = 2;y<= 30;y++){
                 long result = 0;
                 double cost = 0;
-                for(int i = 0;i<10;i++){
+                for(int i = 0;i<1;i++){
 //                    WorkflowModel workflowModel =new WorkflowRandomCreator().create(x,y,2);
 //                    WorkflowModel.store(workflowModel,"model"+x+""+y+""+i);
-                    WorkflowModel workflowModel =WorkflowModel.read("model" + x + "" + y + "" + i);
+                    WorkflowModel workflowModel =WorkflowModel.read("newmodel" + x + "" + y + "" + i);
                     GA n = new GA(workflowModel);
                     long before = System.nanoTime();
-                    cost +=n.begin(10,.5,.05);
+                    cost +=n.begin(100,.8,.1);
                     long after = System.nanoTime();
-                    long time = TimeUnit.MILLISECONDS.convert(after-before,TimeUnit.NANOSECONDS);
+                    long time = TimeUnit.MICROSECONDS.convert(after-before,TimeUnit.NANOSECONDS);
                     result+=time;
                 }
 
@@ -88,7 +106,8 @@ public class GA {
             }
 
         }
-        logAccess.output2CSV("D://","resultGA.csv");
+     //  logAccess.output2CSV("D://","resultGANew.csv");
+       logAccess.Output2Screen();
 
     }
 
@@ -204,10 +223,10 @@ public class GA {
 
     private List<List<Integer>> doSelection(List<List<Integer>> population){
         List<List<Integer>> newPopulation = new ArrayList<List<Integer>>();
-        List<Double> fitness = new ArrayList<Double>();
-        double total = 0;
+        List<Long> fitness = new ArrayList<Long>();
+        long total = 0;
         for(List<Integer> list:population){
-            double temp = calCost(list);
+            long temp = (long)calCost(list);
 
             if(!scheck.deployListCheck(list)){
                 temp*=10;
@@ -222,9 +241,47 @@ public class GA {
                 fitness.set(i,fitness.get(i)+fitness.get(i-1));
             }
         }
-        double range = fitness.get(fitness.size()-1);
+        long range = fitness.get(fitness.size()-1);
         while (newPopulation.size()<population.size()){
-            int posValue = RandomInt.randomInt(0,(int)range);
+            //int i = (int)range;
+            long posValue = RandomInt.randomLong(0, (range));
+            int pos= 0;
+            while (posValue>fitness.get(pos)){
+                pos++;
+            }
+            List<Integer> newList = new ArrayList<Integer>();
+            newList.addAll(population.get(pos));
+            newPopulation.add(newList);
+        }
+        return newPopulation;
+    }
+
+    private List<List<Integer>> doSelection1(List<List<Integer>> population) {
+        List<List<Integer>> newPopulation = new ArrayList<List<Integer>>();
+        List<Long> fitness = new ArrayList<Long>();
+        long total = 0;
+        for(int i=0;i< population.size();i++){
+            List<Integer> list = population.get(i);
+            long temp = (long)calCost(list);
+
+            if(!scheck.deployListCheck(list)){
+                population.set(i,getPopulation(1).get(0));
+                temp = (long)calCost(population.get(i));
+            }
+
+            total+= temp;
+            fitness.add(temp);
+        }
+        for(int i =0;i<fitness.size();i++){
+            fitness.set(i,(total-fitness.get(i)));
+            if(i!=0){
+                fitness.set(i,fitness.get(i)+fitness.get(i-1));
+            }
+        }
+        long range = fitness.get(fitness.size()-1);
+        while (newPopulation.size()<population.size()){
+            //int i = (int)range;
+            long posValue = RandomInt.randomLong(0,(range));
             int pos= 0;
             while (posValue>fitness.get(pos)){
                 pos++;
@@ -278,7 +335,9 @@ public class GA {
                 newPopulation.get(i).add(population.get(i).get(j));
                 if(RandomInt.randomBoolean(mutation)){
                     //int temp = population.get(i).get(j);
-                    int newTemp = RandomInt.randomInt(0,this.cloud.length-1);
+//                    int newTemp = RandomInt.randomInt(0,this.cloud.length-1);
+                    List<Integer> allowed = scheck.getAllowedDeployList(j);
+                    int newTemp = allowed.get(RandomInt.randomInt(0,allowed.size()-1));
                     newPopulation.get(i).set(j,newTemp);
                 }
             }
@@ -323,5 +382,24 @@ public class GA {
         return result;
     }
 
+    private List<List<Integer>> updateStoreAndPopulation(List<List<Integer>> population,List<List<Integer>> list){
+        List<List<Integer>> newPop = new ArrayList<List<Integer>>();
+        for(List<Integer> c:population){
+            list.add(c);
+        }
+        Collections.sort(list,comparator);
+        for(int i = 0;i<population.size();i++){
+            List<Integer> newC = new ArrayList<Integer>();
+            for(int r:list.get(i)){
+                newC.add(r);
+            }
+            newPop.add(newC);
+        }
+        while (list.size()>10){
+            list.remove(list.size()-1);
+        }
+
+        return newPop;
+    }
 
 }

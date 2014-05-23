@@ -104,7 +104,14 @@ public class WorkflowRandomCreator {
 
     }
 
-    public static void main(String [] args){
-
+    public static void main(String [] args) throws IOException {
+        for(int x = 2 ; x<= 12;x ++) {
+            for (int y = 2; y <= 30; y++) {
+                for (int i = 0; i < 10; i++) {
+                    WorkflowModel workflowModel = new WorkflowRandomCreator().create(x, y, 2);
+                    WorkflowModel.store(workflowModel, "newmodel" + x + "" + y + "" + i);
+                }
+            }
+        }
     }
 }
