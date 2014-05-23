@@ -100,10 +100,10 @@ public class WorkflowRandomCreator {
             workflowModel.setDataSecurity(dataSecurity);
             workflowModel.setSsecurity(ssecurity);
             Security security = new Security(workflowModel);
-            if(security.workflowSecurity()){
+
 //                return workflowModel;
                 System.out.println(count++);
-                while(true){
+                while(security.workflowSecurity()){
                     List<Integer> set = new ArrayList<Integer>();
                     Stack<Integer> stack = new Stack<Integer>();
                     int root = 0;
@@ -136,10 +136,8 @@ public class WorkflowRandomCreator {
                             int con = set.get(RandomInt.randomInt(0,set.size()-1));
                             if(i< con){
                                 workflow[i][con] = RandomInt.randomInt(1,100);
-                                dataSecurity[i][con] = RandomInt.randomInt(0,securityRange-1);
                             }else {
                                 workflow[con][i] = RandomInt.randomInt(1,100);
-                                dataSecurity[con][i] = RandomInt.randomInt(0,securityRange-1);
                             }
                         }
                     }
@@ -148,7 +146,7 @@ public class WorkflowRandomCreator {
             }
         }
 
-    }
+
     public static boolean checkDAG(WorkflowTemplate template){
         int [][] workflow = template.getWorkflow();
         Set<Integer> set = new HashSet<Integer>();
