@@ -525,6 +525,7 @@ public class newHEFT {
 
         }
         logAccess.output2CSV("D://", "newresultHEFT.csv");
+        logAccess.Output2Screen();
 //	    	        algorithm n = new algorithm(new Workflow());
 //	    	        System.out.println("-----");
 //	    	        System.out.println(n.HEFTalgorithm());
