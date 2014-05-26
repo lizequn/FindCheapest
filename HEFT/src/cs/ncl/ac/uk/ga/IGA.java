@@ -11,7 +11,7 @@
 // * Date: 14-5-5
 // */
 //public class IGA {
-//    int[][] workflow;
+//    int[][] Workflow;
 //    int[][] dataSecurity;
 //    int [][] ccost;
 //    int [][] cpucost;
@@ -21,7 +21,7 @@
 //    private List<Individual> immuneStore;
 //
 //    public IGA(WorkflowTemplate w){
-//        this.workflow = w.getWorkflow();
+//        this.Workflow = w.getWorkflow();
 //        this.dataSecurity = w.getDataSecurity();
 //        this.ccost = w.getCcost();
 //        this.cpucost = w.getCpucost();
@@ -34,7 +34,7 @@
 //
 //        //check
 //        if(!scheck.workflowSecurity()){
-//            System.out.println("workflow not security");
+//            System.out.println("Workflow not security");
 //            System.exit(0);
 //        }
 //        List<List<Integer>> pop = getPopulation(population);
@@ -207,7 +207,7 @@
 //        }
 //        //System.out.println(number);
 //        while (population>number){
-//            //throw new IllegalArgumentException("for the given workflow, there are not enough valid combinations to build so much population");
+//            //throw new IllegalArgumentException("for the given Workflow, there are not enough valid combinations to build so much population");
 //            population--;
 //        }
 //        // regard it as a max * service size full matrix
@@ -237,13 +237,13 @@
 //    }
 //    private int calMinDataSecurity(int pos){
 //        int result = -1;
-//        for(int i = 0;i<this.workflow.length;i++){
-//            if(this.workflow[pos][i] != -1){
+//        for(int i = 0;i<this.Workflow.length;i++){
+//            if(this.Workflow[pos][i] != -1){
 //                if(result< this.dataSecurity[pos][i]){
 //                    result = this.dataSecurity[pos][i];
 //                }
 //            }
-//            if(this.workflow[i][pos] != -1){
+//            if(this.Workflow[i][pos] != -1){
 //                if(result<this.dataSecurity[i][pos]){
 //                    result = this.dataSecurity[i][pos];
 //                }
@@ -266,10 +266,10 @@
 //            int c = combination.get(i);
 //            result+= this.cpucost[i][c];
 //            // output and input cost
-//            for(int j = 0;j<this.workflow.length;j++){
+//            for(int j = 0;j<this.Workflow.length;j++){
 //                // calculate only two services deploy in different cloud.
 //                if(c!= combination.get(j)){
-//                    int outputData = this.workflow[i][j];
+//                    int outputData = this.Workflow[i][j];
 //                    if(outputData != -1){
 //                        result+= this.ccost[c][combination.get(j)] * outputData;
 //                    }

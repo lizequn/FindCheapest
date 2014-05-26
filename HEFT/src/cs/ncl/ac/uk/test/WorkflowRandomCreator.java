@@ -41,7 +41,8 @@ public class WorkflowRandomCreator {
                 ssecurity[i][0] = securityRange-1; // temp
                 ssecurity[i][1] = RandomInt.randomInt(0,securityRange-1);
                 for(int j = 0;j<cloudn;j++){
-                    cpucost[i][j] = RandomInt.randomInt(1,100);
+                    //cpu cost
+                    cpucost[i][j] = RandomInt.randomInt(1,400);
                 }
             }
 
@@ -69,7 +70,8 @@ public class WorkflowRandomCreator {
             for(int i =0;i<cloudn;i++){
                 for(int j = 0;j<cloudn;j++){
                     if(i ==j) continue;
-                    ccost[i][j] = RandomInt.randomInt(1,100);
+                    //communication cost
+                    ccost[i][j] = RandomInt.randomInt(1,10);
                 }
                 cloud[i] = RandomInt.randomInt(0,securityRange-1);
             }
@@ -127,7 +129,7 @@ public class WorkflowRandomCreator {
                             }
                         }
                     }
-                   // System.out.println(set.size()+ " " + workflow.length);
+                   // System.out.println(set.size()+ " " + Workflow.length);
                     if(set.size()==workflow.length){
                         return workflowModel;
                     }
@@ -172,7 +174,7 @@ public class WorkflowRandomCreator {
                 }
             }
         }
-        //System.out.println(set.size()+ " " + workflow.length);
+        //System.out.println(set.size()+ " " + Workflow.length);
         if(set.size()==workflow.length){
             return true;
         }
@@ -201,7 +203,7 @@ public class WorkflowRandomCreator {
 //        WorkflowModel.store(model,"newmodel" + 2 + "" + 12 + "" + 1);
 //        WorkflowModel model1 = WorkflowModel.read("newmodel" + 2 + "" + 12 + "" + 1);
 //        WorkflowRandomCreator.checkDAG(model1);
-//        print(model.workflow);
+//        print(model.Workflow);
     }
     public static void print(int [][] result){
         for(int h=0;h<result.length;h++){

@@ -51,7 +51,7 @@ public class GA {
 
         //check
         if(!scheck.workflowSecurity()){
-            System.out.println("workflow not security");
+            System.out.println("Workflow not security");
             System.exit(0);
         }
         List<List<Integer>> pop = getPopulation(population);
@@ -175,7 +175,7 @@ public class GA {
         }
         //System.out.println(number);
         while (population>number){
-            //throw new IllegalArgumentException("for the given workflow, there are not enough valid combinations to build so much population");
+            //throw new IllegalArgumentException("for the given Workflow, there are not enough valid combinations to build so much population");
             population--;
         }
         // regard it as a max * service size full matrix

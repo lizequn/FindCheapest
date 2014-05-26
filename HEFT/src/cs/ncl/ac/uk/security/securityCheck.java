@@ -15,9 +15,9 @@ public class securityCheck {
     int[][] dsecurity;
     int [] cloudsecurity;
 
-    // checking the security of the workflow
+    // checking the security of the Workflow
 	/*public boolean workflowSecurity(int[][] dsecurity,int [][] ssecurity){
-		workflow getInfo=new workflow();
+		Workflow getInfo=new Workflow();
 		this.dsecurity=getInfo.getDataSecurity();
 		this.ssecurity=getInfo.getServiceSecurity();
 
@@ -112,7 +112,7 @@ public class securityCheck {
 		securityCheck test=new securityCheck();
 		System.out.println(test.workflowSecurity());
 	//	test.workflowSecurity();
-		//int workflow[][]=getInfo.getWorkflow();
-	//	test.getrootNode(workflow);
+		//int Workflow[][]=getInfo.getWorkflow();
+	//	test.getrootNode(Workflow);
 	}*/
 }
