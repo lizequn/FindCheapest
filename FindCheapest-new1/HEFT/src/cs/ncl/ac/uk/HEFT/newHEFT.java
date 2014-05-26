@@ -35,6 +35,7 @@ public class newHEFT {
 	        deployment=new int[workflow.length][ccost.length];
 	        finaldeployment=new int[workflow.length][ccost.length];
 	        averageCommunication();
+	        startNode();
 	    }
 	    
 	    
@@ -56,7 +57,8 @@ public class newHEFT {
 	    					 for(int a=0;a<deploy.size()-1;a++){
 	    						 int deployBlock=deploy.get(a);
 	    						 if(isoccupied(deployBlock)==-1){
-	    							 total+=cpucost[deployBlock][cloud];
+	    							 
+	    			//				 total+=cpucost[deployBlock][cloud];
 	    							 setfianlDeploy(deployBlock,cloud);
 		    						 queue.remove((Object)deployBlock);
 		    						 
@@ -69,7 +71,7 @@ public class newHEFT {
 	    							 int cloud = getCloud(block);
 	    							 setfianlDeploy(block, cloud);
 		    		                    queue.remove((Object)block);
-		    		                    total += cpucost[block][cloud];
+		    		//                    total += cpucost[block][cloud];
 	    						 }
 	    						
 	    	    			 }else{
@@ -103,7 +105,7 @@ public class newHEFT {
 	    	    	                        setfianlDeploy(block,cloud);
 	    	    	                        queue.remove((Object)block);
 
-	    	    	                        total+=min;
+	    	    	//                        total+=min;
 	    	    	                    }
 	    	    				 }
 	    	    			 }
@@ -111,7 +113,57 @@ public class newHEFT {
 	    			 
 	    		 }
 	    	 }
+	 	 	
+	    	 total=theCost(root,0);
 	    	return total;
+	    	
+	    }
+	    
+	    
+	    private int theCost(ArrayList<Integer> start, int cost){
+	   
+	    	if(start.isEmpty()){
+	    		return cost;
+	    	}else{
+	    		ArrayList<Integer> offSpring=new ArrayList<Integer>();
+	    
+	    		for(int a=0;a<start.size();a++){
+	    			int startNode=start.get(a);
+	    			int startCloud=isoccupied(startNode);
+	    			cost+=cpucost[startNode][startCloud];
+	    			// get nodes' offspring
+	    			for(int i=0;i<workflow.length;i++){
+	    				if(workflow[startNode][i]>0){
+	    				
+	    					int endNode=i;
+	    					int endCloud=isoccupied(endNode);
+	    					int comCost=communicationCost(startNode,endNode,startCloud,endCloud);
+	    					cost+=comCost;
+	    					if(!offSpring.contains(i)){
+	    						offSpring.add(i);
+	    					}
+	    				}
+	    			}
+	    		}
+	    		return theCost(new ArrayList<Integer>(offSpring),cost);
+	    	}
+	    	
+	    }
+	    
+	    // get the startNode
+	    private void  startNode(){
+	    	for (int a=0; a<workflow.length; a++){
+	    		boolean isroot=true;
+	    		for(int i=0;i<workflow.length;i++){
+	    			if(workflow[i][a]>0){
+	    				isroot=false;
+	    				break;
+	    			}
+	    		}
+	    		if(isroot==true){
+	    			root.add(a);
+	    		}
+	    	}
 	    }
 	    
 	    private ArrayList<Integer> isCross(ArrayList<Integer> offSprings){
@@ -326,6 +378,7 @@ public class newHEFT {
 	    	        }
 	    	        return queue;
 	    	    }
+	    	    
 	    	    private void upForward(ArrayList<Integer>offSpringNodes,HashMap<Integer,Integer> rank,ArrayList<Integer> visited){
 	    	        ArrayList<Integer> parentNodes=new ArrayList<Integer>();
 	    	        for(int a=0;a<offSpringNodes.size();a++){
@@ -476,7 +529,15 @@ public class newHEFT {
 	    	        }
 	    	        return -1;
 	    	    }
-
+	    	    
+	    	    private void print(int[][] matrix){
+	    	    	 for(int h=0;h<matrix.length;h++){
+	    		            for(int f=0;f<matrix[h].length;f++){
+	    		                System.out.print(matrix[h][f]+",");
+	    		            }
+	    		            System.out.println("");
+	    		        }
+	    	    }
 	    	    // return the communication cost between two deployed nodes
 	    	    private int communicationCost(int startNode,int endNode,int startCloud,int endCloud){
 	    	        if(startCloud==endCloud){
@@ -488,13 +549,13 @@ public class newHEFT {
 	    	    public static void main(String[] args) throws IOException, ClassNotFoundException, SQLException {
 	    	        LogAccess logAccess = new LogAccess("result");
 	    	        logAccess.init();
-	    	        String url="/Users/zhenyuwen/git/FindCheapest-new1/";
-	    	        for(int x = 2 ; x<= 5;x ++){
-	    	            for(int y = 2;y<= 12;y++){
+	    	        String url="/Users/zhenyuwen/git/FindCheapest-new1/HEFT/";
+	    	    //    for(int x = 2 ; x<= 5;x ++){
+	    	            for(int y = 5;y<= 30;y++){
 	    	                long result = 0;
 	    	                double cost = 0;
 	    	                for(int i = 0;i<10;i++){
-	    	                    WorkflowModel workflowModel =WorkflowModel.read(url+"model" + x + "" + y + "" + i);
+	    	                    WorkflowModel workflowModel =WorkflowModel.read(url+"newmodel" + 5 + "" + y + "" + i);
 //	    	                    print(workflowModel.getWorkflow());
 	    	                    newHEFT n = new newHEFT(workflowModel);
 	    	                    long before = System.nanoTime();
@@ -514,14 +575,14 @@ public class newHEFT {
 	    	                    long time = TimeUnit.MICROSECONDS.convert(after-before,TimeUnit.NANOSECONDS);
 	    	                    result+=time;
 
-	    	                }
+	    	               }
 
 
 	    	                result/=10;
 	    	                cost/=10;
-	    	                logAccess.insertTuple(x+"",y+"",result+"",cost+"");
+	    	                logAccess.insertTuple(5 +"",y+"",result+"",cost+"");
 	    	           //     System.out.println(x+" "+y);
-	    	            }
+	    	       //     }
 
 	    	        }
 	    	       logAccess.output2CSV("/Users/zhenyuwen/Desktop/result", "newresultHEFT.csv");

@@ -159,7 +159,7 @@ public class Normal {
                 list.add(i);
             }
         }
-     //  System.out.println("sp:"+sortedPlatform);
+   //    System.out.println("sp:"+sortedPlatform);
         //
 
         //for each service get all possible deployment
@@ -181,7 +181,7 @@ public class Normal {
             }
             possibleDeploy.add(list);
         }
-     //   System.out.println("sp:"+possibleDeploy);
+      //  System.out.println("sp:"+possibleDeploy);
         //get Permutation
         //get maximum choices
         int max = 0;
@@ -262,14 +262,15 @@ public class Normal {
     public static void main(String [] args) throws SQLException, IOException, ClassNotFoundException {
         LogAccess logAccess = new LogAccess("result");
         logAccess.init();
-        for(int x = 2 ; x<= 5;x ++){
-            for(int y = 2;y<= 12;y++){
+        String url="/Users/zhenyuwen/git/FindCheapest-new1/HEFT/";
+ //       for(int x = 2 ; x<= 5;x ++){
+            for(int y = 5;y<= 12;y++){
                 long result = 0;
                 double cost = 0;
                 for(int i = 0;i<10;i++){
 //                    WorkflowModel workflowModel =new WorkflowRandomCreator().create(x,y,2);
 //                    WorkflowModel.store(workflowModel,"model"+x+""+y+""+i);
-                    WorkflowModel workflowModel =WorkflowModel.read("model" + x + "" + y + "" + (i+8));
+                	  WorkflowModel workflowModel =WorkflowModel.read(url+"newmodel" + 5 + "" + y + "" + i);
                     Normal n = new Normal(workflowModel);
                     long before = System.nanoTime();
                     List<Integer> lists =n.sortBest();
@@ -294,19 +295,19 @@ public class Normal {
 //                    print(workflowModel.getCloud());
 
                     long after = System.nanoTime();
-                    long time = TimeUnit.MILLISECONDS.convert(after-before,TimeUnit.NANOSECONDS);
+                    long time = TimeUnit.MICROSECONDS.convert(after-before,TimeUnit.NANOSECONDS);
                     result+=time;
-                    System.exit(-1);
+             //       System.exit(-1);
                 }
 
                 result/=10;
                 cost/=10;
-                logAccess.insertTuple(x+"",y+"",result+"",cost+"");
-                System.out.println(x+" "+y);
-            }
+                logAccess.insertTuple(5+"",y+"",result+"",cost+"");
+                System.out.println(5+" "+y);
+         //   }
 
         }
-        logAccess.output2CSV("D://","result1.csv");
+            logAccess.output2CSV("/Users/zhenyuwen/Desktop/result", "normal.csv");
 //        Normal n = new Normal(new Workflow());
 //       // Normal n = new Normal(new WorkflowRandomCreator().create(4,12,2));
 //        System.out.println("finish creating");
