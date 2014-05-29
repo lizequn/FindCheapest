@@ -11,7 +11,6 @@ public class Workflow implements WorkflowTemplate {
             {-1,-1,-1,-1,-1,-1,-1}};
 
     // data security
-
     int [][] dsecurity={{-1,0,1,-1,-1,-1,-1},
             {-1,-1,-1,0,-1,-1,-1},
             {-1,-1,-1,-1,0,-1,-1},

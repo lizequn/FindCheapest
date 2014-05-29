@@ -57,8 +57,8 @@ public class GA {
         List<List<Integer>> pop = getPopulation(population);
         double m = Double.MAX_VALUE;
         for(int i =0;i<500;i++){
-            List<List<Integer>> pop0 = updateStoreAndPopulation(pop,store);
-            List<List<Integer>> pop1 = doSelection1(pop0);
+     //       List<List<Integer>> pop0 = updateStoreAndPopulation(pop,store);
+            List<List<Integer>> pop1 = doSelection1(pop);
             List<List<Integer>> pop2 = doCrossover(pop1,crossover);
             List<List<Integer>> pop3 = doMutation(pop2,mutation);
             double temp = getBest(pop3);
@@ -67,7 +67,7 @@ public class GA {
             }
             pop = pop3;
         }
-        //System.out.println(m);
+   //     printBest(pop);
         return m;
     }
 
@@ -107,8 +107,8 @@ public class GA {
             }
 
      //   }
-            logAccess.output2CSV("/Users/zhenyuwen/Desktop/result", "G.csv");
- //      logAccess.Output2Screen();
+            logAccess.output2CSV("/Users/zhenyuwen/Desktop/result", "GB.csv");
+          logAccess.Output2Screen();
 
     }
 
@@ -361,6 +361,21 @@ public class GA {
 //        System.out.println(list);
 //        System.out.println(min);
         return min;
+    }
+    
+    private void printBest(List<List<Integer>> input){
+        List<Integer> list = null;
+        double min = Double.MAX_VALUE;
+        for(List<Integer> r:input){
+            if(scheck.deployListCheck(r)){
+                double temp = calCost(r);
+                if(min>temp){
+                    min = temp;
+                    list = r;
+                }
+            }
+        }
+        System.out.println(list);
     }
 
     public double calCost(List<Integer> combination){

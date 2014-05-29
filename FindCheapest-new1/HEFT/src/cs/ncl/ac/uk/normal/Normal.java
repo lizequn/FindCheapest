@@ -29,7 +29,7 @@ public class Normal {
     int [][] cpucost;
     int [] cloud;
     int [][] ssecurity;
-
+ 
     public Normal(WorkflowTemplate w){
         this.workflow = w.getWorkflow();
         this.dataSecurity = w.getDataSecurity();
@@ -264,7 +264,7 @@ public class Normal {
         logAccess.init();
         String url="/Users/zhenyuwen/git/FindCheapest-new1/HEFT/";
  //       for(int x = 2 ; x<= 5;x ++){
-            for(int y = 5;y<= 12;y++){
+            for(int y = 2;y<= 12;y++){
                 long result = 0;
                 double cost = 0;
                 for(int i = 0;i<10;i++){
@@ -302,7 +302,7 @@ public class Normal {
 
                 result/=10;
                 cost/=10;
-                logAccess.insertTuple(5+"",y+"",result+"",cost+"");
+                logAccess.insertTuple("normal",5+"",y+"",result+"",cost+"");
                 System.out.println(5+" "+y);
          //   }
 

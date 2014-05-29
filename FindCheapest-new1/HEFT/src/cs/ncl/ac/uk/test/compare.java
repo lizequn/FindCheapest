@@ -7,6 +7,7 @@ import cs.ncl.ac.uk.HEFT.NCF;
 import cs.ncl.ac.uk.HEFT.algorithm;
 import cs.ncl.ac.uk.HEFT.newHEFT;
 import cs.ncl.ac.uk.HEFT.oneStepForward;
+import cs.ncl.ac.uk.ga.GA;
 import cs.ncl.ac.uk.gready.gready;
 import cs.ncl.ac.uk.normal.Normal;
 
@@ -17,14 +18,15 @@ public class compare {
 	//	 for(int y=2;y<12;y++){
 	//  	 for(int i = 0;i<10;i++){
 	//		 WorkflowModel workflowModel =WorkflowModel.read(url+"model" + x + "" + 6 + "" + 1);
-		 WorkflowModel workflowModel =WorkflowModel.read(url+"newmodel" + x + "" + 8 + "" + 9);
+		 WorkflowModel workflowModel =WorkflowModel.read(url+"newmodel" + x + "" + 15 + "" + 8);
 		 	int workflow[][] =workflowModel.getWorkflow();
 	//	            Workflow workflowModel=new Workflow();
 		//			algorithm n = new algorithm(workflowModel);
 	//				gready n2=new gready(workflowModel);
-					Normal n1 = new Normal(workflowModel);
+	//				Normal n1 = new Normal(workflowModel);
 	//				newHEFT n3=new newHEFT(workflowModel);
-					NCF n5= new NCF(workflowModel);
+					NCF n5= new NCF(workflowModel); 
+					 GA n4 = new GA(workflowModel);
 		//			oneStepForward n4=new oneStepForward(workflowModel);
 					print(workflow);
 		//			System.out.println("....................");
@@ -40,13 +42,14 @@ public class compare {
 			//		System.out.println("....................");
 		//			dataSecurity(workflowModel.dataSecurity );
 		//			System.out.println("....................");
-					List<Integer> lists =n1.sortBest();
-		//	        System.out.println(lists);
+		//			List<Integer> lists =n1.sortBest();
+			//        System.out.println(lists);
 				//	n.HEFTalgorithm();
 	//				System.out.println("HEFT:"+n.HEFTalgorithm());
 	//				System.out.println("Gready:"+n2.greadyAlgorithm());
-					System.out.println("Sort:"+n1.calCost(lists));
+		//			System.out.println("Sort:"+n1.calCost(lists));
 					System.out.println("NCF:"+n5.NCFAlgorithm());
+					System.out.println("GA:"+n4.begin(100,.8,.1));
 					
 		//			System.out.println("newHEFT:"+n3.newAlgorithm());
 		//			System.out.println("oneStep:"+n4.newAlgorithm());
