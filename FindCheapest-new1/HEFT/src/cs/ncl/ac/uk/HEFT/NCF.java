@@ -16,16 +16,16 @@ import cs.ncl.ac.uk.test.WorkflowModel;
 import cs.ncl.ac.uk.test.WorkflowTemplate;
 
 public class NCF {
-	int[][] workflow;
-    int [][] ccost;
-    int [][] cpucost;
+	double[][] workflow;
+    double [][] ccost;
+    double [][] cpucost;
     int [][] deployment;
     int [][] finaldeployment;
     int aveCom=0;
     ArrayList<Integer> root=new ArrayList<Integer>();
     ArrayList<Integer> leaf=new ArrayList<Integer>();
-    HashMap<Integer,Integer> rank=new HashMap<Integer,Integer>();
-    HashMap<Integer,Integer> SOC=new  HashMap<Integer,Integer>();
+    HashMap<Integer,Double> rank=new HashMap<Integer,Double>();
+    HashMap<Integer,Double> SOC=new  HashMap<Integer,Double>();
     Security checking;
     
     public NCF(WorkflowTemplate getInfo){
@@ -40,7 +40,7 @@ public class NCF {
     }
     
     
-    public int NCFAlgorithm(){
+    public double NCFAlgorithm(){
     	preDeploy();
    	 LinkedList<Integer> queue = sortRank(rank);
    //	 System.out.println(queue);
@@ -50,22 +50,22 @@ public class NCF {
    			ArrayList<Integer> parentNodes=getParents(block);
 		//	if(!parentNodes.isEmpty()){
 				if(deployCheck(parentNodes)||parentNodes.isEmpty()){
-				System.out.println(block);
+		//		System.out.println(block);
 					ArrayList<Integer> offSprings=getOffSpring(block);
 			   		
 				   	//		 if(getParents(block).isEmpty()){
-				   				ArrayList<Integer>deploy=isCross(offSprings);
-				   				ArrayList<Integer>newDeploy=checkCross(offSprings,block,parentNodes);
+				   				ArrayList<Object>deploy=isCross(offSprings);
+				   				ArrayList<Object>newDeploy=checkCross(offSprings,block,parentNodes);
 				   				
 				   				if(deploy.isEmpty()&&newDeploy.isEmpty()){
 				   			//		System.out.println("fffffff");
 
-				   				    int min = 0;
+				   				    double min = 0;
 				                    int cloud = 0;
 				                        for (int a = 0; a < ccost.length; a++) {
 				                            if (checking.allowedDeploy(block, a)) {
 				                            
-				                                int SOCcost = newSOC(block, a, parentNodes);
+				                                double SOCcost = newSOC(block, a, parentNodes);
 				                                if (SOCcost == -1) {
 				                                  //  show = true;
 				                                    System.out.println("parent node has not been deployed");
@@ -90,11 +90,12 @@ public class NCF {
 				   				}else{
 				   					if(!deploy.isEmpty()&&!newDeploy.isEmpty()){
 				   						
-				   						if(deploy.get(deploy.size()-1)>newDeploy.get(newDeploy.size()-1)){
+				   						if((double)deploy.get(deploy.size()-1)>(double)newDeploy.get(newDeploy.size()-1)){
 				   		//					System.out.println("aaaaaa");
-						   					 int cloud=deploy.get(deploy.size()-2);
-				   	    					 for(int a=0;a<deploy.size()-2;a++){
-				   	    						 int deployBlock=deploy.get(a);
+						   					 int cloud=(int)deploy.get(deploy.size()-2);
+						   					 ArrayList<Integer>temp=(ArrayList<Integer>) deploy.get(0);
+				   	    					 for(int a=0;a<temp.size();a++){
+				   	    						 int deployBlock=temp.get(a);
 				   	    						 if(isoccupied(deployBlock)==-1){
 				   	    							 setfianlDeploy(deployBlock,cloud);
 				   		    						 queue.remove((Object)deployBlock);
@@ -102,9 +103,10 @@ public class NCF {
 				   	    					  }
 						   					}else{
 						//   						System.out.println("zzzzz");
-						   					 int cloud=newDeploy.get(newDeploy.size()-2);
-				   	    					 for(int a=0;a<newDeploy.size()-2;a++){
-				   	    						 int deployBlock=newDeploy.get(a);
+						   					 int cloud=(int)newDeploy.get(newDeploy.size()-2);
+						   					 ArrayList<Integer>temp=(ArrayList<Integer>) deploy.get(0);
+				   	    					 for(int a=0;a<temp.size();a++){
+				   	    						 int deployBlock=temp.get(a);
 				   	    						 if(isoccupied(deployBlock)==-1){
 				   	    							 setfianlDeploy(deployBlock,cloud);
 				   		    						 queue.remove((Object)deployBlock);
@@ -114,9 +116,10 @@ public class NCF {
 				   					}else{
 				   						if(!deploy.isEmpty()){
 				   		//					System.out.println("hhhhhhh");
-				   						 int cloud=deploy.get(deploy.size()-2);
-			   	    					 for(int a=0;a<deploy.size()-2;a++){
-			   	    						 int deployBlock=deploy.get(a);
+				   						 int cloud=(int)deploy.get(deploy.size()-2);
+				   						 ArrayList<Integer>temp=(ArrayList<Integer>) deploy.get(0);
+			   	    					 for(int a=0;a<temp.size();a++){
+			   	    						 int deployBlock=temp.get(a);
 			   	    						 if(isoccupied(deployBlock)==-1){
 			   	    							 setfianlDeploy(deployBlock,cloud);
 			   		    						 queue.remove((Object)deployBlock);
@@ -124,9 +127,10 @@ public class NCF {
 			   	    					  }
 				   						}else{
 				   			//				System.out.println("ssssssss");
-				   						 int cloud=newDeploy.get(newDeploy.size()-2);
-			   	    					 for(int a=0;a<newDeploy.size()-2;a++){
-			   	    						 int deployBlock=newDeploy.get(a);
+				   						 int cloud=(int)newDeploy.get(newDeploy.size()-2);
+				   						 ArrayList<Integer>temp=(ArrayList<Integer>) deploy.get(0);
+			   	    					 for(int a=0;a<temp.size();a++){
+			   	    						 int deployBlock=temp.get(a);
 			   	    						 if(isoccupied(deployBlock)==-1){
 			   	    							 setfianlDeploy(deployBlock,cloud);
 			   		    						 queue.remove((Object)deployBlock);
@@ -198,9 +202,9 @@ public class NCF {
     }
     
     // when a node has lots of son
-    private ArrayList<Integer> checkCross(ArrayList<Integer> offSprings,int block,ArrayList<Integer> parents){
-    	ArrayList<Integer> deploySet=new ArrayList<Integer>();
-    	int min=Integer.MAX_VALUE;
+    private ArrayList<Object> checkCross(ArrayList<Integer> offSprings,int block,ArrayList<Integer> parents){
+    	ArrayList<Object> deploySet=new ArrayList<Object>();
+    	double min=Integer.MAX_VALUE;
     	int cloud=0;
     	// put all nodes in one cloud
     	for(int a=0;a<ccost.length;a++){
@@ -217,8 +221,8 @@ public class NCF {
     		}
     		
     		if(isValid){
-    			int comCost=thecommunication(parents,block,a);
-    			int costoffSprings=0;
+    			double comCost=thecommunication(parents,block,a);
+    			double costoffSprings=0;
     			for(int h=0;h<offSprings.size();h++){
     				int offNode=offSprings.get(h);
     				costoffSprings+=cpucost[offNode][a];
@@ -232,15 +236,16 @@ public class NCF {
     	
     //	System.out.println(cloud);
     	
-    	int predeploycost=SOC.get(block);
+    	double predeploycost=SOC.get(block);
     	for(int f=0;f<offSprings.size();f++){
     		int offNode=offSprings.get(f);
     		predeploycost+=SOC.get(offNode);
     	}
     	 
     	if(min<predeploycost){
-    		deploySet=(ArrayList<Integer>) offSprings.clone();
-    		deploySet.add(block);
+    	//	deploySet=(ArrayList<Integer>) offSprings.clone();
+    		offSprings.add(block);
+    		deploySet.add(offSprings);
     		deploySet.add(cloud);
     		deploySet.add(min);
     	}
@@ -249,7 +254,7 @@ public class NCF {
     }
     
     // calculate the final cost
-    private int theCost(ArrayList<Integer> start, int cost,ArrayList<Integer> isVisited){
+    private double theCost(ArrayList<Integer> start, double cost,ArrayList<Integer> isVisited){
  	   
     	if(start.isEmpty()){
     		return cost;
@@ -261,9 +266,9 @@ public class NCF {
     			int startNode=start.get(a);
     			int startCloud=isoccupied(startNode);
     			if(!isVisited.contains(startNode)){
-    				System.out.println("Node:"+startNode);
+    	//			System.out.println("Node:"+startNode);
     				cost+=cpucost[startNode][startCloud];
-    				System.out.println(cpucost[startNode][startCloud]);
+    	//			System.out.println(cpucost[startNode][startCloud]);
     				isVisited.add(startNode);
     			
     			// get nodes' offspring
@@ -272,8 +277,8 @@ public class NCF {
     				
     					int endNode=i;
     					int endCloud=isoccupied(endNode);
-    					int comCost=communicationCost(startNode,endNode,startCloud,endCloud);
-    					System.out.println(comCost);
+    					double comCost=communicationCost(startNode,endNode,startCloud,endCloud);
+    			//		System.out.println(comCost);
     					cost+=comCost;
     					if(!offSpring.contains(i)){
     						offSpring.add(i);
@@ -301,13 +306,13 @@ public class NCF {
     	return offSpring;
     }
     
-    private ArrayList<Integer> isCross(ArrayList<Integer> offSprings){
-    	int max=Integer.MIN_VALUE;
+    private ArrayList<Object> isCross(ArrayList<Integer> offSprings){
+    	double max=Integer.MIN_VALUE;
     	int son=0;
-    	ArrayList<Integer> deploySet=new ArrayList<Integer>();
+    	ArrayList<Object> deploySet=new ArrayList<Object>();
     	for(int a=0;a<offSprings.size();a++){
     		int node=offSprings.get(a);
-    		int SOCcost=SOC.get(node);
+    		double SOCcost=SOC.get(node);
     		if(max<SOCcost){
     			max=SOCcost;
     			son=node;
@@ -318,7 +323,7 @@ public class NCF {
     	ArrayList<Integer> UDsiblingNode=unDeploySibling(siblingNode);
     	// check the siblingNode's parent's nodes are all deployed
     	if(isDeployed(UDsiblingNode)){
-    		int min=Integer.MAX_VALUE;
+    		double min=Integer.MAX_VALUE;
         	int cloud=0;
         	for(int a=0;a<ccost.length;a++){
         		boolean isValid=false;
@@ -341,10 +346,11 @@ public class NCF {
         		}
         	}
         	
-        	int currentCost=parentCost(UDsiblingNode);
+        	double currentCost=parentCost(UDsiblingNode);
         	if(min<(currentCost+max)){
-        		deploySet=(ArrayList<Integer>) UDsiblingNode.clone();
-        		deploySet.add(son);
+        	//	deploySet=(ArrayList<Integer>) UDsiblingNode.clone();
+        		UDsiblingNode.add(son);
+        		deploySet.add(UDsiblingNode);
         		deploySet.add(cloud);
         		deploySet.add(min);
         	}
@@ -393,8 +399,8 @@ public class NCF {
     	return isDeployed;
     }
     
-    private int parentCost(ArrayList<Integer> siblingNode){
-    	int total=0;
+    private double parentCost(ArrayList<Integer> siblingNode){
+    	double total=0;
     	for(int a=0;a<siblingNode.size();a++){
     		int node=siblingNode.get(a);
     		total+=SOC.get(node);
@@ -407,12 +413,12 @@ public class NCF {
      * put them in one cloud. otherwise, keep using SOC
      * */
     
-    private int miniCost(int son, ArrayList<Integer>  siblingNode, int cloud){
-    	int totalcost=cpucost[son][cloud];
+    private double miniCost(int son, ArrayList<Integer>  siblingNode, int cloud){
+    	double totalcost=cpucost[son][cloud];
     	for(int a=0;a<siblingNode.size();a++){
     		int node=siblingNode.get(a);
     		if(!getParents(node).isEmpty()){
-    			int cost=thecommunication(getParents(node),node,cloud);
+    			double cost=thecommunication(getParents(node),node,cloud);
     			totalcost+=cost;
     		}
     		totalcost+=cpucost[node][cloud];
@@ -421,8 +427,8 @@ public class NCF {
     	return totalcost;
     }
     // communication cost with node's parent nodes
-    private int thecommunication(ArrayList<Integer> parents,int node,int nodeCloud){
-    	int cost=0;
+    private double thecommunication(ArrayList<Integer> parents,int node,int nodeCloud){
+    	double cost=0;
     	for(int a=0;a<parents.size();a++){
     		int parentNode=parents.get(a);
     		int parentCloud=isoccupied(parentNode);
@@ -460,20 +466,20 @@ public class NCF {
 	                    int cloud = getCloud(block);
 	                    setDeployment(block, cloud);
 	                    queue.remove((Object)block);
-	                    int SOCcost=cpucost[block][cloud];
+	                    double SOCcost=cpucost[block][cloud];
 	                    SOC.put(block, SOCcost);
 	          //          total += SOCcost;
 
 	                } else {
 	                	
 	                    ArrayList<Integer> parent = getParents(block);
-	                    int min = 0;
+	                    double min = 0;
 	                    int cloud = 0;
 	                    if (!getUndeploy(parent)) {
 	                        for (int a = 0; a < ccost.length; a++) {
 	                            if (checking.allowedDeploy(block, a)) {
 	                            
-	                                int SOCcost = SOC(block, a, parent);
+	                                double SOCcost = SOC(block, a, parent);
 	                                if (SOCcost == -1) {
 	                                  //  show = true;
 	                                    System.out.println("parent node has not been deployed");
@@ -541,9 +547,9 @@ public class NCF {
     }
     // sum of the communication cost depend of new deployment
     
-    public int newSOC(int node,int cloud,ArrayList<Integer> parent){
-    	int sum=0;
-    	  int computCost=cpucost[node][cloud];
+    public double newSOC(int node,int cloud,ArrayList<Integer> parent){
+    	double sum=0;
+    	  double computCost=cpucost[node][cloud];
           sum+=computCost;
           for(int a=0;a<parent.size();a++){
               int singleNode=parent.get(a);
@@ -558,9 +564,9 @@ public class NCF {
     	return sum;
     }
     // the sum of the communication cost from parent nodes
-    public int SOC(int node,int cloud,ArrayList<Integer> parent){
-        int sum=0;
-        int computCost=cpucost[node][cloud];
+    public double SOC(int node,int cloud,ArrayList<Integer> parent){
+        double sum=0;
+        double computCost=cpucost[node][cloud];
         sum+=computCost;
         for(int a=0;a<parent.size();a++){
             int singleNode=parent.get(a);
@@ -575,7 +581,7 @@ public class NCF {
     }
     
     // return the communication cost between two deployed nodes
-    private int communicationCost(int startNode,int endNode,int startCloud,int endCloud){
+    private double communicationCost(int startNode,int endNode,int startCloud,int endCloud){
         if(startCloud==endCloud){
             return 0;
         }else{
@@ -586,7 +592,7 @@ public class NCF {
  // get cheapest computing cloud
     private int getCloud(int node){
         int cloud=0;
-        int min=0;
+        double min=0;
         for(int a=0;a<cpucost[node].length;a++){
             if(min==0 &&checking.allowedDeploy(node, a)){
                 min=cpucost[node][a];
@@ -628,14 +634,14 @@ public class NCF {
             if(isleaf==true){
                 leaf.add(a);
                 visited.add(a);
-                int leafCost=computeAva(a);
+                double leafCost=computeAva(a);
                 rank.put(a, leafCost);
             }
         }
         upForward(leaf, rank, visited);
     }
     
-	    private LinkedList<Integer> sortRank(final HashMap<Integer,Integer> rank){
+	    private LinkedList<Integer> sortRank(final HashMap<Integer,Double> rank){
 	        LinkedList<Integer> queue = new LinkedList<Integer>();
 	        Comparator<Integer> valueComparator =  new Comparator<Integer>(){
 	            public int compare(Integer o1, Integer o2) {
@@ -648,16 +654,16 @@ public class NCF {
 	            }
 	        };
 
-	        Map<Integer,Integer> sortedByValues=new TreeMap<Integer,Integer>(valueComparator);
+	        Map<Integer,Double> sortedByValues=new TreeMap<Integer,Double>(valueComparator);
 	        sortedByValues.putAll(rank);
-	        for(Map.Entry<Integer, Integer>entry: sortedByValues.entrySet()){
+	        for(Map.Entry<Integer, Double>entry: sortedByValues.entrySet()){
 	            int key=entry.getKey();
 	            queue.addFirst(key);
 	        }
 	        return queue;
 	    }
     
-    private void upForward(ArrayList<Integer>offSpringNodes,HashMap<Integer,Integer> rank,ArrayList<Integer> visited){
+    private void upForward(ArrayList<Integer>offSpringNodes,HashMap<Integer,Double> rank,ArrayList<Integer> visited){
         ArrayList<Integer> parentNodes=new ArrayList<Integer>();
         for(int a=0;a<offSpringNodes.size();a++){
             int nodeName=offSpringNodes.get(a);
@@ -668,7 +674,7 @@ public class NCF {
                         parentNodes.add(parent);
                     }
                     if(!visited.contains(parent)){
-                        int rankcost=rankCost(parent,rank);
+                    	double rankcost=rankCost(parent,rank);
                         rank.put(parent, rankcost);
                         visited.add(parent);
                     }
@@ -681,12 +687,12 @@ public class NCF {
     }
     
     // ranking by average
-    private int rankCost(int node,HashMap<Integer,Integer> rank){
-        int rankcost=0;
+    private double rankCost(int node,HashMap<Integer,Double> rank){
+        double rankcost=0;
         // the communication cost from one node to its offspring nodes
         //	int communCost=0;
         // the single step ranking cost
-        int singleRank=0;
+        double singleRank=0;
         for(int a=0;a<workflow.length;a++){
             if(workflow[node][a]>0){
              //   System.out.println(node);
@@ -700,14 +706,14 @@ public class NCF {
             }
         }
 
-        int computeCost=computeAva(node);
+        double computeCost=computeAva(node);
         rankcost=singleRank+computeCost;
         return rankcost;
     }
     
-    private int avCommunication(int startNode,int endNode){
-        int avcomCost=0;
-        int dataSize=workflow[startNode][endNode];
+    private double avCommunication(int startNode,int endNode){
+        double avcomCost=0;
+        double dataSize=workflow[startNode][endNode];
         avcomCost=aveCom*dataSize;
 
         return avcomCost;
@@ -725,9 +731,9 @@ public class NCF {
     }
     
     // the average cost of each node
-    private int computeAva(int node){
-        int avCost = 0;
-        int sumCost = 0;
+    private double computeAva(int node){
+        double avCost = 0;
+        double sumCost = 0;
         for(int a=0;a<cpucost[node].length;a++){
             sumCost+=cpucost[node][a];
         }

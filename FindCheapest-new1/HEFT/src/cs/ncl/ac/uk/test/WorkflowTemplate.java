@@ -8,13 +8,13 @@ public interface WorkflowTemplate {
 
 
 
-    public int[][] getWorkflow();
+    public double[][] getWorkflow();
 
     public int[][] getDataSecurity();
 
-    public int[][] getCcost();
+    public double[][] getCcost();
 
-    public int[][] getCpucost();
+    public double[][] getCpucost();
 
     public int[] getCloud();
 

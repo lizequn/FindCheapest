@@ -106,39 +106,39 @@ public class escWorkflow  implements WorkflowTemplate {
 	            {1,1}
 	    };
 	@Override
-	public int[][] getWorkflow() {
+	public double [][] getWorkflow() {
 		// TODO Auto-generated method stub
-		return null;
+		return workflow;
 	}
 
 	@Override
 	public int[][] getDataSecurity() {
 		// TODO Auto-generated method stub
-		return null;
+		return dsecurity;
 	}
 
 	@Override
-	public int[][] getCcost() {
+	public double[][] getCcost() {
 		// TODO Auto-generated method stub
-		return null;
+		return ccost;
 	}
 
 	@Override
-	public int[][] getCpucost() {
+	public double[][] getCpucost() {
 		// TODO Auto-generated method stub
-		return null;
+		return cpucost;
 	}
 
 	@Override
 	public int[] getCloud() {
 		// TODO Auto-generated method stub
-		return null;
+		return cloud;
 	}
 
 	@Override
 	public int[][] getSsecurity() {
 		// TODO Auto-generated method stub
-		return null;
+		return ssecurity;
 	}
 
 }

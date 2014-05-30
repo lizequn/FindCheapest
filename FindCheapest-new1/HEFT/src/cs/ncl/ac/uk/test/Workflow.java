@@ -2,7 +2,7 @@ package cs.ncl.ac.uk.test;
 
 public class Workflow implements WorkflowTemplate {
     // workflow the weight represents the data size
-    int[][] workflow={{-1,10,5,-1,-1,-1,-1},
+	double[][] workflow={{-1,10,5,-1,-1,-1,-1},
             {-1,-1,-1,15,-1,-1,-1},
             {-1,-1,-1,-1,14,-1,-1},
             {-1,-1,-1,-1,-1,200,-1},
@@ -19,11 +19,11 @@ public class Workflow implements WorkflowTemplate {
             {-1,-1,-1,-1,-1,-1,0},
             {-1,-1,-1,-1,-1,-1,-1}};
     // communication cost
-    int [][] ccost ={{0,2,4},
+    double [][] ccost ={{0,2,4},
             {3,0,1},
             {2,1,0}};
     // CPU cost for each block on the clouds
-    int [][] cpucost={{30,20,16},
+    double [][] cpucost={{30,20,16},
             {25,30,29},
             {10,35,26},
             {43,29,17},
@@ -43,23 +43,23 @@ public class Workflow implements WorkflowTemplate {
             {0,0}
     };
 
-    public int [][] getWorkflow(){
+    public double [][] getWorkflow(){
 		return workflow;
 	}
 	
-	public int[][] comCost(){
+	public double[][] comCost(){
 		return ccost;
 	}
 	
-	public int[][] deployCost(){
+	public double[][] deployCost(){
 		return cpucost;
 	}
 
-    public int[][] getCcost() {
+    public double[][] getCcost() {
         return ccost;
     }
 
-    public int[][] getCpucost() {
+    public double[][] getCpucost() {
         return cpucost;
     }
 
