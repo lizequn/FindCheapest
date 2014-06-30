@@ -1,6 +1,6 @@
 package cs.ncl.ac.uk.normal;
 
-import cs.ncl.ac.uk.log.LogAccess;
+import cs.ncl.ac.uk.logs.LogAccess;
 import cs.ncl.ac.uk.test.Workflow;
 import cs.ncl.ac.uk.test.WorkflowModel;
 import cs.ncl.ac.uk.test.WorkflowRandomCreator;
@@ -23,12 +23,14 @@ public class Normal {
 //    private  int[][] servicesCPUCost;        //cpu cost on different platform
 //    private  int[][] platformInfo;           //platform security, input and output cost
 
-    int[][] workflow;
+    double[][] workflow;
     int[][] dataSecurity;
-    int [][] ccost;
-    int [][] cpucost;
+    double [][] ccost;
+    double [][] cpucost;
     int [] cloud;
     int [][] ssecurity;
+    double[][] storageTime;
+    double[] storageCost;
  
     public Normal(WorkflowTemplate w){
         this.workflow = w.getWorkflow();
@@ -37,6 +39,8 @@ public class Normal {
         this.cpucost = w.getCpucost();
         this.cloud = w.getCloud();
         this.ssecurity = w.getSsecurity();
+        this.storageCost=w.getStorageCost();
+        this.storageTime=w.getStorageTime();
     }
       // check
 
@@ -248,9 +252,13 @@ public class Normal {
             for(int j = 0;j<this.workflow.length;j++){
                 // calculate only two services deploy in different cloud.
                 if(c!= combination.get(j)){
-                    int outputData = this.workflow[i][j];
+                    double outputData = this.workflow[i][j];
                     if(outputData != -1){
                        result+= this.ccost[c][combination.get(j)] * outputData;
+                       // the cost of storage is source cloud storagecost * datasize * storagetime
+                //       System.out.println(storageCost[c]);
+                //       System.out.println(storageTime[i][j]);
+                       result+=this.storageCost[c]*storageTime[i][j]*outputData;
                     }
                 }
             }

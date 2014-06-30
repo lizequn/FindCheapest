@@ -7,13 +7,15 @@ import java.io.*;
  *         Date: 14-5-1
  */
 public class WorkflowModel implements WorkflowTemplate,Serializable {
-    int[][] workflow;
+    double[][] workflow;
     int[][] dataSecurity;
-    int [][] ccost;
-    int [][] cpucost;
+    double [][] ccost;
+    double [][] cpucost;
+    // cloud means cloud security level
     int [] cloud;
     int [][] ssecurity;
-
+    double [][] StorageTime;
+    double [] StorageCost;
     public static void store(WorkflowModel workflowModel,String address) throws IOException {
         FileOutputStream fout = new FileOutputStream(address);
         ObjectOutputStream oos = new ObjectOutputStream(fout);
@@ -26,7 +28,7 @@ public class WorkflowModel implements WorkflowTemplate,Serializable {
     }
 
 
-    void setWorkflow(int[][] workflow) {
+    void setWorkflow(double[][] workflow) {
         this.workflow = workflow;
     }
 
@@ -34,24 +36,31 @@ public class WorkflowModel implements WorkflowTemplate,Serializable {
         this.dataSecurity = dataSecurity;
     }
 
-    void setCcost(int[][] ccost) {
+    void setCcost(double[][] ccost) {
         this.ccost = ccost;
     }
 
-    void setCpucost(int[][] cpucost) {
+    void setCpucost(double[][] cpucost) {
         this.cpucost = cpucost;
     }
 
-    void setCloud(int[] cloud) {
+    void setCloud(int [] cloud) {
         this.cloud = cloud;
     }
 
     void setSsecurity(int[][] ssecurity) {
         this.ssecurity = ssecurity;
     }
+    
+    void setStorageTime(double [][] StorageTime){
+    	this.StorageTime=StorageTime;
+    }
+    void setStorageCost(double [] StorageCost){
+    	this.StorageCost=StorageCost;
+    }
 
     @Override
-    public int[][] getWorkflow() {
+    public double[][] getWorkflow() {
         return this.workflow;
     }
 
@@ -61,17 +70,17 @@ public class WorkflowModel implements WorkflowTemplate,Serializable {
     }
 
     @Override
-    public int[][] getCcost() {
+    public double[][] getCcost() {
         return this.ccost;
     }
 
     @Override
-    public int[][] getCpucost() {
+    public double[][] getCpucost() {
         return this.cpucost;
     }
 
     @Override
-    public int[] getCloud() {
+    public int [] getCloud() {
         return this.cloud;
     }
 
@@ -79,4 +88,15 @@ public class WorkflowModel implements WorkflowTemplate,Serializable {
     public int[][] getSsecurity() {
         return this.ssecurity;
     }
+	@Override
+	public double[][] getStorageTime() {
+		// TODO Auto-generated method stub
+		
+		return this.StorageTime;
+	}
+	@Override
+	public double[] getStorageCost() {
+		// TODO Auto-generated method stub
+		return this.StorageCost;
+	}
 }

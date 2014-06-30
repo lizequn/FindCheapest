@@ -10,10 +10,10 @@ import java.util.List;
  *         Date: 14-5-1
  */
 public class Security {
-    int[][] workflow;
+    double[][] workflow;
     int[][] dataSecurity;
     int [][] ccost;
-    int [][] cpucost;
+ //   int [][] cpucost;
     int [] cloud;
     int [][] ssecurity;
     private final List<Integer> possibleDeploy;
@@ -22,8 +22,8 @@ public class Security {
     public Security(WorkflowTemplate w){
         this.workflow = w.getWorkflow();
         this.dataSecurity = w.getDataSecurity();
-        this.ccost = w.getCcost();
-        this.cpucost = w.getCpucost();
+   //     this.ccost = w.getCcost();
+   //     this.cpucost = w.getCpucost();
         this.cloud = w.getCloud();
         this.ssecurity = w.getSsecurity();
         possibleDeploy = init();

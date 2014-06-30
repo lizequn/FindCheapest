@@ -56,11 +56,11 @@ public class escWorkflow  implements WorkflowTemplate {
 	    
 	    // data security
 
-	    int [][] dsecurity={{-1, 0,0 ,-1,1,-1   ,-1   ,-1,-1,-1  ,-1,-1,-1   ,-1,-1  ,-1,-1,-1   ,-1,-1  ,-1},
+	    int [][] dsecurity={{-1, 0,0 ,-1,0,-1   ,-1   ,-1,-1,-1  ,-1,-1,-1   ,-1,-1  ,-1,-1,-1   ,-1,-1  ,-1},
    				{-1,-1,0 ,-1,0    ,-1   ,-1   ,-1,-1,-1  ,-1,-1,-1   ,-1, 0  , 0,-1,-1   ,-1,-1  ,-1},
    				{-1,-1,-1,0 ,-1   ,-1   ,-1   ,-1,-1,-1  ,-1,-1,-1   ,-1,-1  ,-1,-1,-1   ,-1,-1  ,-1},
    				{-1,-1,-1,-1,-1   ,0    ,-1   ,-1,-1,-1  ,-1,-1,-1   ,-1,-1  ,-1,-1,-1   ,-1,-1  ,-1},
-   				{-1,-1,-1,-1,-1   ,1,-1   ,-1,-1,-1  ,-1,-1,-1   ,-1,-1  ,-1,-1,-1   ,-1,-1  ,-1},
+   				{-1,-1,-1,-1,-1   ,0,-1   ,-1,-1,-1  ,-1,-1,-1   ,-1,-1  ,-1,-1,-1   ,-1,-1  ,-1},
    				{-1,-1,-1,-1,-1   ,-1   ,1,-1,-1,-1  ,-1,-1,-1   ,-1,-1  ,-1,-1,-1   ,-1,-1  ,-1},
    				{-1,-1,-1,-1,-1   ,-1   ,-1   ,0 ,-1,1,-1,-1,-1   ,-1,-1  ,-1,-1,-1   ,-1,-1  ,-1},
    				{-1,-1,-1,-1,-1   ,-1   ,-1   ,-1,0 ,0   ,-1,-1,-1   ,-1,-1  ,-1,-1,-1   ,-1,-1  ,-1},
@@ -83,14 +83,14 @@ public class escWorkflow  implements WorkflowTemplate {
 	    int [] cloud={0,1,0,1};
 	    
 	    // service security: clearance, location
-	    int [][] ssecurity={{1,1},
+	    int [][] ssecurity={{0,0},
 	            {0,0},
 	            {0,0},
-	            {1,0},
-	            {1,1},
-	            {1,1},
-	            {1,1},
-	            {1,0},
+	            {0,0},
+	            {0,0},
+	            {0,0},
+	            {0,0},
+	            {0,0},
 	            {0,0},
 	            {1,1},
 	            {0,0},
@@ -139,6 +139,18 @@ public class escWorkflow  implements WorkflowTemplate {
 	public int[][] getSsecurity() {
 		// TODO Auto-generated method stub
 		return ssecurity;
+	}
+
+	@Override
+	public double[][] getStorageTime() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public double[] getStorageCost() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

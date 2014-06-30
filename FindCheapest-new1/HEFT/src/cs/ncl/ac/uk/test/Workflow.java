@@ -73,4 +73,16 @@ public class Workflow implements WorkflowTemplate {
         return ssecurity;
     }
 
+	@Override
+	public double[][] getStorageTime() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public double[] getStorageCost() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

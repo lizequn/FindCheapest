@@ -1,7 +1,7 @@
 package cs.ncl.ac.uk.ga;
 
 
-import cs.ncl.ac.uk.log.LogAccess;
+import cs.ncl.ac.uk.logs.LogAccess;
 import cs.ncl.ac.uk.security.Security;
 import cs.ncl.ac.uk.security.securityCheck;
 import cs.ncl.ac.uk.test.RandomInt;
@@ -19,10 +19,12 @@ import java.util.concurrent.TimeUnit;
  *         Date: 14-4-30
  */
 public class GA {
-    int[][] workflow;
+    double[][] workflow;
     int[][] dataSecurity;
-    int [][] ccost;
-    int [][] cpucost;
+    double [][] ccost;
+    double [][] cpucost;
+    double[][] storageTime;
+    double[] storageCost;
     int [] cloud;
     int [][] ssecurity;
     private Security scheck;
@@ -35,6 +37,8 @@ public class GA {
         this.ccost = w.getCcost();
         this.cpucost = w.getCpucost();
         this.cloud = w.getCloud();
+        this.storageCost=w.getStorageCost();
+        this.storageTime=w.getStorageTime();
         this.ssecurity = w.getSsecurity();
         this.scheck = new Security(w);
     }
@@ -108,7 +112,7 @@ public class GA {
 
      //   }
             logAccess.output2CSV("/Users/zhenyuwen/Desktop/result", "GB.csv");
-          logAccess.Output2Screen();
+           // logAccess.Output2Screen();
 
     }
 
@@ -387,9 +391,10 @@ public class GA {
             for(int j = 0;j<this.workflow.length;j++){
                 // calculate only two services deploy in different cloud.
                 if(c!= combination.get(j)){
-                    int outputData = this.workflow[i][j];
+                    double outputData = this.workflow[i][j];
                     if(outputData != -1){
                         result+= this.ccost[c][combination.get(j)] * outputData;
+                        result+=this.storageCost[c]*storageTime[i][j]*outputData;
                     }
                 }
             }

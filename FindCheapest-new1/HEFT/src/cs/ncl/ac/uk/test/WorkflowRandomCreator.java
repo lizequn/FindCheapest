@@ -15,26 +15,31 @@ public class WorkflowRandomCreator {
     public WorkflowModel create(int cloudn,int servicen,int securityRange){
         while (true){
             WorkflowModel workflowModel = new WorkflowModel();
-            int [][] workflow = new int[servicen][servicen];
+            double [][] workflow = new double[servicen][servicen];
             int [][] dataSecurity = new int[servicen][servicen];
-            int [][] ccost = new int[cloudn][cloudn];
-            int [][] cpucost = new int[servicen][cloudn];
+            double [][] ccost = new double[cloudn][cloudn];
+            double [][] cpucost = new double[servicen][cloudn];
             int [] cloud = new int[cloudn];
             int [][] ssecurity = new int[servicen][2];
+            double [][] storageTime=new double[servicen][servicen];
+            double [] storageCost=new double[cloudn];
             int max = 0;
             for(int i =0;i<servicen;i++){
                 for(int j =0; j<servicen;j++){
                     if(i >=j){
                         workflow[i][j] = -1;
                         dataSecurity[i][j] = -1;
+                        storageTime[i][j]=-1;
                     }else {
                         if(1 == RandomInt.randomInt(1,servicen) ) {
                             workflow[i][j] = RandomInt.randomInt(1,100);
                             dataSecurity[i][j] = RandomInt.randomInt(0,securityRange-1);
+                            storageTime[i][j]=RandomInt.randomInt(1,40);
                             if(max<dataSecurity[i][j]) max = dataSecurity[i][j];
                         } else {
                             workflow[i][j] = -1;
                             dataSecurity[i][j] = -1;
+                            storageTime[i][j]=-1;
                         }
                     }
                 }
@@ -60,9 +65,11 @@ public class WorkflowRandomCreator {
                     if(i< con){
                         workflow[i][con] = RandomInt.randomInt(1,100);
                         dataSecurity[i][con] = RandomInt.randomInt(0,securityRange-1);
+                        storageTime[i][con]=RandomInt.randomInt(1,40);
                     }else {
                         workflow[con][i] = RandomInt.randomInt(1,100);
                         dataSecurity[con][i] = RandomInt.randomInt(0,securityRange-1);
+                        storageTime[con][i]=RandomInt.randomInt(1,40);
                     }
                     island = false;
                 }
@@ -74,6 +81,7 @@ public class WorkflowRandomCreator {
                     ccost[i][j] = RandomInt.randomInt(1,10);
                 }
                 cloud[i] = RandomInt.randomInt(0,securityRange-1);
+                storageCost[i]= new Random().nextDouble()*0.1;
             }
 
             for(int i = 0;i<servicen;i++){
@@ -101,6 +109,8 @@ public class WorkflowRandomCreator {
             workflowModel.setCpucost(cpucost);
             workflowModel.setDataSecurity(dataSecurity);
             workflowModel.setSsecurity(ssecurity);
+            workflowModel.setStorageCost(storageCost);
+            workflowModel.setStorageTime(storageTime);
             Security security = new Security(workflowModel);
 
 //                return workflowModel;
@@ -150,7 +160,7 @@ public class WorkflowRandomCreator {
 
 
     public static boolean checkDAG(WorkflowTemplate template){
-        int [][] workflow = template.getWorkflow();
+        double [][] workflow = template.getWorkflow();
         Set<Integer> set = new HashSet<Integer>();
         Stack<Integer> stack = new Stack<Integer>();
         int root = 0;
